@@ -14,10 +14,11 @@ module WiserTrails
         # Define ownership to a resource targeted by this activity
         belongs_to :account, :polymorphic => true
         # Serialize parameters Hash
+        serialize :old_value, Hash
         serialize :new_value, Hash
 
         if ::ActiveRecord::VERSION::MAJOR < 4
-          attr_accessible :key, :owner, :new_value, :account, :trackable
+          attr_accessible :key, :owner, :account, :trackable, :old_value, :new_value
         end
       end
     end

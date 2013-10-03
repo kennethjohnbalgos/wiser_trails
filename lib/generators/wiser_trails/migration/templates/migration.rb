@@ -7,6 +7,7 @@ class CreateWiserTrails < ActiveRecord::Migration
       t.belongs_to :account, :polymorphic => true
       t.belongs_to :owner, :polymorphic => true
       t.string :key
+      t.text :old_value
       t.text :new_value
 
       t.timestamps

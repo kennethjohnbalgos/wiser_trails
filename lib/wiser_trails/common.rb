@@ -298,7 +298,12 @@ module WiserTrails
           )
         )
       )
-      options[:new_value] = self.attributes
+
+      changes = Hash.new
+      self.changed_attributes.each do |attr, val|
+        changes[attr.to_sym] = val if attr != "updated_at"
+      end
+      options[:old_value] = changes.stringify_keys
       options.delete(:params)
 
       customs = self.class.activity_custom_fields_global.clone
@@ -324,6 +329,7 @@ module WiserTrails
     # called from any other place, or from application code.
     # @private
     def reset_activity_instance_options
+      @activity_old_value = {}
       @activity_new_value = {}
       @activity_key = nil
       @activity_owner = nil

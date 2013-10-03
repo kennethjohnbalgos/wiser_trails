@@ -8,7 +8,9 @@ module WiserTrails
       class Adapter
         # Creates the activity on `trackable` with `options`
         def self.create_activity(trackable, options)
-          trackable.activities.create options
+          activity = trackable.activities.create options
+          activity.update_attribute(:new_value, trackable.attributes.stringify_keys) if activity.new_value == {}
+          return activity
         end
       end
     end

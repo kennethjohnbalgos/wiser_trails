@@ -9,7 +9,8 @@ module WiserTrails
     private
       # Records an activity upon destruction of the tracked model
       def activity_on_destroy
-        create_activity(:destroy)
+        activity = create_activity(:destroy, old_value: self.attributes)
+        activity.update_attribute(:old_value, self.attributes.stringify_keys) if activity
       end
   end
 end

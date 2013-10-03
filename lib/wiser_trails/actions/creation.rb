@@ -9,7 +9,8 @@ module WiserTrails
     private
       # Creates activity upon creation of the tracked model
       def activity_on_create
-        create_activity(:create)
+        activity = create_activity(:create, new_value: self.attributes.stringify_keys)
+        activity.update_attribute(:old_value, {}) if activity
       end
   end
 end

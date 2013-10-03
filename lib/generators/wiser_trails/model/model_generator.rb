@@ -1,10 +1,10 @@
-require 'generators/wiser_date'
+require 'generators/wiser_trails'
 require 'rails/generators/active_record'
 
 module WiserTrails
   module Generators
     # Activity generator that creates activity model file from template
-    class ActivityGenerator < ActiveRecord::Generators::Base
+    class ModelGenerator < ActiveRecord::Generators::Base
       extend Base
 
       argument :name, :type => :string, :default => 'wiser_trails'

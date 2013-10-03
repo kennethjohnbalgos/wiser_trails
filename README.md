@@ -17,12 +17,14 @@ You can do normal gem installation for `wiser_trails`:
 or in your Gemfile:
 
 ```ruby
-gem 'wiser_trails'
+gem 'wiser_trails', ~> '2.0.0'
 ```
+
+Then restart your application.
 
 ### Database
 
-**(ActiveRecord only)** Generate a migration for trails and migrate the database (in your Rails project):
+Generate a migration for trails and migrate the database (in your Rails project):
 
     rails g wiser_trails:migration
     rake db:migrate
@@ -68,9 +70,33 @@ class Notes < ActiveRecord::Base
 end
 ```
 
+This will automatically record all the changes for trailed models.
+
+#### Good Thing
+
+_Wiser Trails_ will saved **ONLY** the changed attributes during the `update` action.
+
+For example:
+
+```ruby
+  @note = Note.create(title: "New Note", content: "This is my first note.")
+  # @note.old_value = {}
+  # @note.new_value = {"title" => "New Note", "content" => "This is my first note."}
+```
+
+Then when you update the record:
+
+```ruby
+  @note.update_attribute(:title, "New Title")
+  # @note.old_value = {"title" => "New Note"}
+  # @note.new_value = {"title" => "New Note"}
+```
+
+It will not save any unchanged attributes, and you can get the updated fields for displaying.
+
 ### Monitoring Custom Actions
 
-To record custom actions, you can manually trigger the `create_activity` method on the model record:
+To record custom actions, you can manually trigger the `create_activity` method on the model record but **this will not save the `old_value`**:
 
 ```ruby
 @note.create_activity(key: 'note.published', owner: current_user)
@@ -114,11 +140,12 @@ def show
 end
 ```
 
-You can also get the new trackable value by calling `new_value`:
+You can also get the old and new object value by calling `old_value` or `new_value`:
 
 ```ruby
 def show
   @trail = WiserTrails::Activity.find(params[:id])
+  # @trail.old_value => exact Note attributes before the trail was recorded
   # @trail.new_value => exact Note attributes after the trail was recorded
 end
 ```
