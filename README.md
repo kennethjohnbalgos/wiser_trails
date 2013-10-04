@@ -17,7 +17,7 @@ You can do normal gem installation for `wiser_trails`:
 or in your Gemfile:
 
 ```ruby
-gem 'wiser_trails', ~> '2.0.0'
+gem 'wiser_trails', '~> 2.0.0'
 ```
 
 Then restart your application.
