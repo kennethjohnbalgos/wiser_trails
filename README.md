@@ -17,7 +17,7 @@ You can do normal gem installation for `wiser_trails`:
 or in your Gemfile:
 
 ```ruby
-gem 'wiser_trails', ~> '2.0.0'
+gem 'wiser_trails', '~> 2.0.0'
 ```
 
 Then restart your application.
@@ -65,8 +65,8 @@ Or even the `account` if you're having a multi-account structure:
 class Notes < ActiveRecord::Base
   include WiserTrails::Model
   trail_it
-    owner: ->(controller, model) { controller && controller.current\_user },
-    account: ->(controller, model) { controller && controller.current\_account }
+    owner: ->(controller, model) { controller && controller.current_user },
+    account: ->(controller, model) { controller && controller.current_account }
 end
 ```
 
