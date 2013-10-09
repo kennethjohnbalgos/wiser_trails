@@ -17,7 +17,7 @@ You can do normal gem installation for `wiser_trails`:
 or in your Gemfile:
 
 ```ruby
-gem 'wiser_trails', '~> 2.0.0'
+gem 'wiser_trails', '~> 2.1.0'
 ```
 
 Then restart your application.
@@ -70,13 +70,9 @@ class Notes < ActiveRecord::Base
 end
 ```
 
-This will automatically record all the changes for trailed models.
-
 #### Good Thing
 
 _Wiser Trails_ will saved **ONLY** the changed attributes during the `update` action.
-
-For example:
 
 ```ruby
   @note = Note.create(title: "New Note", content: "This is my first note.")
@@ -93,6 +89,32 @@ Then when you update the record:
 ```
 
 It will not save any unchanged attributes, and you can get the updated fields for displaying.
+
+### Skipping fields (_for version >= 2.1.0 only_)
+
+In some point, you don't want to auto-record the changes in some fields, you can use `:skip_fields` to do that.
+
+```ruby
+class Notes < ActiveRecord::Base
+  include WiserTrails::Model
+  trail_it
+    owner: ->(controller, model) { controller && controller.current_user },
+    account: ->(controller, model) { controller && controller.current_account },
+    skip_fields: ["times_viewed","last_updated_by_id"]
+end
+```
+
+The `updated_at` and `created_at` are skipped by default.
+
+### Turning it on and off
+
+You may want to skip the recording of the changes in some instances, you can do it using the `wiser_trails_off` and `wiser_trails_on` methods. 
+
+```ruby
+  Note.wiser_trails_off
+  @note.update_attribute(:updated_at, Time.now)
+  Note.wiser_trails_on
+```
 
 ### Monitoring Custom Actions
 
@@ -149,6 +171,12 @@ def show
   # @trail.new_value => exact Note attributes after the trail was recorded
 end
 ```
+
+## Change Logs
+
+ - 2.1.0 - Implement `:skip_fields`
+ - 2.0.0 - Store `old_value` and `new_value`
+ - 1.1.0 - Initial Release
 
 ## Contributing
 
