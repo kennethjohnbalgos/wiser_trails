@@ -23,8 +23,9 @@ module WiserTrails
 
     included do
       include Trackable
-      class_attribute :activity_owner_global, :activity_account_global,
-                      :activity_new_value_global, :activity_hooks, :activity_custom_fields_global
+      class_attribute :activity_owner_global, :activity_account_global, :activity_skip_fields_global,
+                      :activity_new_value_global, :activity_hooks, :activity_custom_fields_global,
+                      :activity_force_fields_global
       set_wiser_trails_class_defaults
     end
 
@@ -71,49 +72,18 @@ module WiserTrails
     # @return [Hash<Symbol, Object>]
     attr_accessor :activity_new_value
     @activity_new_value = {}
-    # Set or get owner object responsible for the {Activity}.
-    #
-    # == Usage:
-    #
-    #   # where current_user is an object of logged in user
-    #   @article.activity_owner = current_user
-    #   # OR: take @article.author association
-    #   @article.activity_owner = :author
-    #   # OR: provide a Proc with custom code
-    #   @article.activity_owner = proc {|controller, model| model.author }
-    #   @article.save
-    #   @article.activities.last.owner #=> Returns owner object
-    # @return [Model] Polymorphic model
-    # @see #activity_owner_global
     attr_accessor :activity_owner
     @activity_owner = nil
-
-    # Set or get recipient for activity.
-    #
-    # Association is polymorphic, thus allowing assignment of
-    # all types of models. This can be used for example in the case of sending
-    # private notifications for only a single user.
-    # @return (see #activity_owner)
     attr_accessor :activity_account
     @activity_account = nil
-    # Set or get custom i18n key passed to {Activity}, later used in {Renderable#text}
-    #
-    # == Usage:
-    #
-    #   @article = Article.new
-    #   @article.activity_key = "my.custom.article.key"
-    #   @article.save
-    #   @article.activities.last.key #=> "my.custom.article.key"
-    #
-    # @return [String]
     attr_accessor :activity_key
     @activity_key = nil
-
-    # Set or get custom fields for later processing
-    #
-    # @return [Hash]
     attr_accessor :activity_custom_fields
     @activity_custom_fields = {}
+    attr_accessor :activity_skip_fields_global
+    @activity_skip_fields_global = {}
+    attr_accessor :activity_force_fields_global
+    @activity_force_fields_global = {}
 
     # @!visibility private
     @@activity_hooks = {}
@@ -131,18 +101,10 @@ module WiserTrails
         self.activity_new_value_global         = {}
         self.activity_hooks                    = {}
         self.activity_custom_fields_global     = {}
+        self.activity_skip_fields_global       = {}
+        self.activity_force_fields_global      = {}
       end
 
-      # Extracts a hook from the _:on_ option provided in
-      # {Tracked::ClassMethods#tracked}. Returns nil when no hook exists for
-      # given action
-      # {Common#get_hook}
-      #
-      # @see Tracked#get_hook
-      # @param key [String, Symbol] action to retrieve a hook for
-      # @return [Proc, nil] callable hook or nil
-      # @since 0.4.0
-      # @api private
       def get_hook(key)
         key = key.to_sym
         if self.activity_hooks.has_key?(key) and self.activity_hooks[key].is_a? Proc
@@ -335,6 +297,8 @@ module WiserTrails
       @activity_owner = nil
       @activity_account = nil
       @activity_custom_fields = {}
+      @activity_skip_fields_global = {}
+      @activity_force_fields_global = {}
     end
   end
 end

@@ -7,10 +7,10 @@ module WiserTrails
     def text(params = {})
       # TODO: some helper for key transformation for two supported formats
       k = key.split('.')
-      k.unshift('activity') if k.first != 'activity'
+      k.unshift('wiser_trails') if k.first != 'wiser_trails'
       k = k.join('.')
 
-      I18n.t(k, parameters.merge(params) || {})
+      I18n.t(k, params || {})
     end
 
     # Renders activity from views.
@@ -91,15 +91,14 @@ module WiserTrails
 
       locals = params.delete(:locals) || Hash.new
 
-      params_indifferent = self.parameters.with_indifferent_access
+      params_indifferent = self.new_value.with_indifferent_access
       params_indifferent.merge!(params)
 
       context.render params.merge(:partial => (partial_path || self.template_path(self.key)),
         :layout => layout,
         :locals => locals.merge(:a => self, :activity => self,
            :controller => controller,
-           :current_user => controller.respond_to?(:current_user) ?
-                controller.current_user : nil ,
+           :current_user => controller.respond_to?(:current_user) ? controller.current_user : nil,
            :p => params_indifferent, :params => params_indifferent))
     end
 
